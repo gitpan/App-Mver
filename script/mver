@@ -1,0 +1,31 @@
+#!/usr/bin/env perl
+
+use Pod::Usage;
+use Pod::Find qw(pod_where);
+
+my $module = shift || usage();
+$module =~ s{-}{::}g;
+
+my $is_loaded = eval "use $module;1";
+unless(defined $is_loaded) {
+    print "$module is not installed or contains error";
+}
+else {
+    my $version = $module->VERSION;
+    if(defined $version) {
+        print $version;
+    }
+    else {
+        print "$module is installed, but \$VERSION is not defined";
+    }
+}
+print $/;
+
+sub usage {
+    pod2usage({
+        -input => pod_where(
+            { -inc => 1 },
+            'App::Mver',
+        ),
+    });
+}
