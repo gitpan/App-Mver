@@ -12,6 +12,7 @@ license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
+module_name: App::Mver
 name: App-Mver
 no_index:
   directory:
@@ -20,4 +21,4 @@ requires:
   Pod::Parser: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.01
+version: 0.02

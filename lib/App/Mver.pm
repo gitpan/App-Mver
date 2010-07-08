@@ -1,3 +1,11 @@
+package App::Mver;
+
+our $VERSION = '0.02';
+
+# vim: ft=perl
+
+__END__
+
 =encoding utf8
 
 =head1 NAME
@@ -23,5 +31,3 @@ For those, who are sick of
 =head1 LICENSE
 
 This program is free software, you can redistribute it under the same terms as Perl itself.
-
-# vim: ft=perl
