@@ -10,7 +10,12 @@ usage() if $arg eq '-h' or $arg eq '--help';
 
 my $is_loaded = eval "use $arg;1";
 unless(defined $is_loaded) {
-    print "$arg is not installed or contains error";
+    if($@ =~ /^Can't locate/) {
+        print "$arg is not installed";
+    }
+    else {
+        print "$arg is installed, but contains error";
+    }
 }
 else {
     my $version = $arg->VERSION;
