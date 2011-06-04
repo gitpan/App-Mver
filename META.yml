@@ -1,13 +1,13 @@
 ---
 abstract: "just print modules' $VERSION"
 author:
-  - 'Алексей Суриков <ksuri@cpan.org>'
+  - 'Alexey Surikov <ksuri@cpan.org>'
 build_requires:
   ExtUtils::MakeMaker: 6.42
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 1.00'
+generated_by: 'Module::Install version 1.01'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -17,8 +17,10 @@ name: App-Mver
 no_index:
   directory:
     - inc
+recommends:
+  Module::CoreList: 0
 requires:
   Pod::Parser: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.03
+version: 0.04
