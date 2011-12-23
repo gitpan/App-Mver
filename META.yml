@@ -1,5 +1,5 @@
 ---
-abstract: "just print modules' $VERSION"
+abstract: "just print modules' C<$VERSION> (and some other stuff)"
 author:
   - 'Alexey Surikov <ksuri@cpan.org>'
 build_requires:
@@ -18,9 +18,11 @@ no_index:
   directory:
     - inc
 recommends:
+  JSON::Any: 0
+  LWP::Simple: 0
   Module::CoreList: 0
 requires:
   Pod::Parser: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.05
+version: 0.06
