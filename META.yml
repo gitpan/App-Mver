@@ -22,7 +22,9 @@ recommends:
   LWP::Simple: 0
   Module::CoreList: 0
 requires:
+  ExtUtils::MakeMaker: 0
   Pod::Parser: 0
+  version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.06
+version: 0.07

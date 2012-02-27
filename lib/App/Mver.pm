@@ -1,34 +1,24 @@
 package App::Mver;
 
 use strict;
+use version;
 use warnings;
 
-use Pod::Usage;
-use Pod::Find qw(pod_where);
-use Getopt::Long qw(GetOptionsFromArray);
+use ExtUtils::MakeMaker;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
-my $module_corelist = eval 'use Module::CoreList; 1';
-my $lwp_useragent   = eval 'use LWP::Simple; 1';
+my $module_corelist = eval 'require Module::CoreList; 1';
+my $lwp_useragent   = eval 'require LWP::Simple; 1';
 my $json_any        = eval 'use JSON::Any; 1';
 my $can_do_requests = $lwp_useragent && $json_any;
 
 sub run {
-    GetOptionsFromArray(
-        \@_,
-        \my %opts,
-        'help|h',
-        'no-internet|n',
-    );
-    my @modules = grep { not /^-/ } @_;
+    my($modules, $opts) = @_;
 
-    @modules or usage();
-    usage(2) if $opts{help};
+    $can_do_requests = 0 if $opts->{'no-internet'};
 
-    $can_do_requests = 0 if $opts{'no-internet'};
-
-    mver($_) for @modules;
+    mver($_) for @$modules;
 }
 
 sub mver {
@@ -41,24 +31,12 @@ sub mver {
         print $Config::Config{version};
     }
     else {
-        my $is_loaded = eval "use $arg; 1";
-        unless(defined $is_loaded) {
-            if($@ =~ /^Can't locate/) {
-                print 'not installed';
-            }
-            else {
-                print 'installed, but contains error';
-            }
-        }
-        else {
-            my $version = $arg->VERSION;
-            if(defined $version) {
+        my $file = MM->_installed_file_for_module($arg);
+        if(defined $file) {
+            my $version = version->parse(MM->parse_version($file));
+            if($version) {
+                $version = version->parse($version);
                 print $version;
-
-                my $authority = eval "\$$arg\::AUTHORITY";
-                if(defined $authority) {
-                    print " ($authority)";
-                }
 
                 if($module_corelist and is_core($arg)) {
                     print ' (core module)';
@@ -70,15 +48,16 @@ sub mver {
 
             if($can_do_requests) {
                 my $latest = get_latest_version($arg);
-                if(defined $latest) {
-                    if($latest eq $version) {
-                        print ' (latest)';
-                    }
-                    else {
-                        print " (latest: $latest)";
-                    }
+                if($latest and $latest <= $version) {
+                    print ' (latest)';
+                }
+                else {
+                    print " (latest: $latest)";
                 }
             }
+        }
+        else {
+            print 'not installed';
         }
     }
     print $/;
@@ -99,20 +78,10 @@ sub get_latest_version {
     my $response = eval { JSON::Any->from_json($json) } or return;
 
     if($response->{status} eq 'latest') {
-        return $response->{version};
+        return version->parse($response->{version});
     }
 
     return;
-}
-
-sub usage {
-    pod2usage(
-        -verbose => $_[0],
-        -input   => pod_where(
-            { -inc => 1 },
-            __PACKAGE__,
-        ),
-    );
 }
 
 1;
@@ -129,25 +98,23 @@ For those, who are sick of
 
     perl -MLong::Module::Name -le'print Long::Module::Name->VERSION'
 
-=head1 SYNOPSIS
+The main purpose of this simple stupid tool is to save you some typing.
 
-    mver Module::Name1 Module-Name2 Module::NameN
-
-    mver perl # shortcut for perl -V:version
-
-=head1 OPTIONS
+It will report you the following things (some of them require command line arguments):
 
 =over 4
 
-=item --no-internet (-n)
+=item your installed version of the given module(s)
 
-Disable MetaCPAN API querying.
+=item whether or not your current version is the last one available on CPAN
 
-=item --help (-h)
-
-Show this message.
+=item whether or not the module is included in Perl distribution
 
 =back
+
+=head1 SEE ALSO
+
+L<mver>
 
 =head1 AUTHOR
 
